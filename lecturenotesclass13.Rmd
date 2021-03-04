@@ -348,22 +348,23 @@ manhattan %>%
 
 ### A confidence interval for the population proportion - $p$
 
-Consider the mice radiation dataset. Suppose we want to compute a 95% confidence interval for the proportion of mice that died while not on the treatment,regardless of the dose.
+Consider the mice radiation dataset. Suppose we want to compute a 95% confidence interval for the proportion of mice that died while not on the treatment, regardless of the dose.
 
 First, identify the following:
 
-- Population: 
-- Parameter of interest:
-- Sample:
-- Sample size:
+- Population: Mice not on the treatment
+- Parameter of interest: Proportion
+- Sample: Mice that died while not on the treatment
+- Sample size: 261
 
 ```{r boot_mice}
 boot_prop <- mice %>% 
-  filter(treat == 0) %>% 
+  filter(treat == 0) %>%
   mutate(died = if_else(died == 1, "yes", "no")) %>% 
   specify(response = died, success = "yes") %>% 
   generate(reps = 10000, type = "bootstrap") %>% 
   calculate(stat = "prop")
+boot_prop
 ```
 
 ```{r ci_mice}
@@ -372,6 +373,7 @@ ci_mice_died
 ```
 
 What does this mean?
+We are 95% confident that the true proportion of mice that died while not on the treatment is between 69% and 79.7%.
 
 **Interpretation**:
 
@@ -385,22 +387,29 @@ visualise(boot_prop) +
 Consider the mice radiation results. Suppose we want to compute a 90% confidence interval for the proportion of mice that lived while on the treatment, regardless of the dose.
 
 ```{r practice_2_bootstrap}
-
+mice_practice2 <- mice %>% 
+  filter(treat == 1) %>%
+  mutate(died = if_else(died == 1, "yes", "no")) %>% 
+  specify(response = died, success = "no") %>% 
+  generate(reps = 10000, type = "bootstrap") %>% 
+  calculate(stat = "prop")
+mice_practice2
 ```
 
 ```{r practice_2_ci}
-
+mice_practice2_ci <- get_ci(mice_practice2, level = .9)
+mice_practice2_ci
 ```
 
-Visualizing our Resuts:
+Visualizing our Results:
 
 ```{r practice_2_visualize}
-
+visualise(mice_practice2) +
+  shade_ci(mice_practice2_ci)
 ```
 
-
 Give an interpretation of your result.
-
+We are 90% confident that the proportion of mice that survived while on the treatment is between 55.2% and 65.1%.
 
 # References
 
